@@ -45,13 +45,13 @@ def line_triangulation(cfg, imagecols, neighbors=None, ranges=None):
     # [A] sfm metainfos (neighbors, ranges)
     ##########################################################
     sfminfos_colmap_folder = None
-    if neighbors is None:
-        sfminfos_colmap_folder, neighbors, ranges = _runners.compute_sfminfos(cfg, imagecols) # 如果一開始沒有鄰居的話，利用COLMAP point triangulation(SFM -> compute neighbor)計算鄰居給他
-    else:
-        limapio.save_txt_metainfos(os.path.join(cfg["dir_save"], "metainfos.txt"), neighbors, ranges)
-        neighbors = imagecols.update_neighbors(neighbors)
-        for img_id, neighbor in neighbors.items():
-            neighbors[img_id] = neighbors[img_id][:cfg["n_neighbors"]] # 限制每個image的鄰居數，全都變成cfg["n_neighbors"]個鄰居
+    # if neighbors is None:
+    #     sfminfos_colmap_folder, neighbors, ranges = _runners.compute_sfminfos(cfg, imagecols) # 如果一開始沒有鄰居的話，利用COLMAP point triangulation(SFM -> compute neighbor)計算鄰居給他
+    # else:
+    #     limapio.save_txt_metainfos(os.path.join(cfg["dir_save"], "metainfos.txt"), neighbors, ranges)
+    #     neighbors = imagecols.update_neighbors(neighbors)
+    #     for img_id, neighbor in neighbors.items():
+    #         neighbors[img_id] = neighbors[img_id][:cfg["n_neighbors"]] # 限制每個image的鄰居數，全都變成cfg["n_neighbors"]個鄰居
     for img_id, _ in enumerate(imagecols):
         if img_id == 0:
             neighbors[img_id] = [1]
