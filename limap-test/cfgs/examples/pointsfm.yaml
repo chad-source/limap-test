@@ -4,7 +4,7 @@ n_neighbors: 20
 
 # loading config 
 load_meta: False
-dir_load: null
+dir_load: "tmp/colmap_outputs"
 skip_exists: False
 
 # sfm config

@@ -1,3 +1,4 @@
+from genericpath import isfile
 import os
 import numpy as np
 import warnings
@@ -119,6 +120,10 @@ def compute_sfminfos(cfg, imagecols, fname="metainfos.txt"):
         ranges (pair of :class:`np.array`, each of shape (3,)): robust 3D ranges for the scene computed from the sfm point cloud.
     """
     import limap.pointsfm as _psfm
+
+    if os.path.isfile(os.path.join(os.path.join(cfg["dir_save"], cfg["sfm"]["colmap_output_path"]),fname)):
+        cfg["load_meta"] = True # 修改
+
     if not cfg["load_meta"]:
         # run colmap sfm and compute neighbors, ranges
         colmap_output_path = os.path.join(cfg["dir_save"], cfg["sfm"]["colmap_output_path"])
@@ -131,7 +136,7 @@ def compute_sfminfos(cfg, imagecols, fname="metainfos.txt"):
         limapio.save_txt_metainfos(fname_save, neighbors, ranges)
     else:
         # load from precomputed info
-        colmap_output_path = os.path.join(cfg["dir_load"], cfg["sfm"]["colmap_output_path"])
+        colmap_output_path = os.path.join(cfg["dir_load"], cfg["sfm"]["colmap_output_path"]) # pointsfm.yaml修改
         limapio.check_path(cfg["dir_load"])
         fname_load = os.path.join(cfg["dir_load"], fname)
         neighbors, ranges = limapio.read_txt_metainfos(fname_load)
@@ -162,10 +167,15 @@ def compute_2d_segs(cfg, imagecols, compute_descinfo=True):
     basedir = os.path.join("line_detections", cfg["line2d"]["detector"]["method"])
     folder_save = os.path.join(cfg["dir_save"], basedir)
     descinfo_folder = None
-    se_det = cfg["skip_exists"] or cfg["line2d"]["detector"]["skip_exists"]
+    se_det = cfg["skip_exists"] or cfg["line2d"]["detector"]["skip_exists"] # lined_detect.yaml skip_exists修改
     if compute_descinfo:
         se_ext = cfg["skip_exists"] or cfg["line2d"]["extractor"]["skip_exists"] # 決定是否跳過已經存在的檢測結果和描述符
     detector = limap.line2d.get_detector(cfg["line2d"]["detector"], max_num_2d_segs=cfg["line2d"]["max_num_2d_segs"], do_merge_lines=cfg["line2d"]["do_merge_lines"], visualize=cfg["line2d"]["visualize"], weight_path=weight_path)
+    
+    # 修改
+    if os.path.isfile(os.path.join(os.path.join(cfg["dir_load"],basedir),"visualize")):
+        cfg["load_det"] = True
+    
     if not cfg["load_det"]:
         if compute_descinfo and cfg["line2d"]["detector"]["method"] == cfg["line2d"]["extractor"]["method"] and (not cfg["line2d"]["do_merge_lines"]):
             all_2d_segs, descinfo_folder = detector.detect_and_extract_all_images(folder_save, imagecols, skip_exists=(se_det and se_ext)) # 做line detection和detect後線段的描述子，最後產出線段與線段描述子
