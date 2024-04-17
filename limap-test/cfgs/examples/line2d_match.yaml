@@ -4,7 +4,7 @@ dir_save: "tmp"
 # loading config 
 load_match: False
 dir_load: null
-skip_exists: False
+skip_exists: True # 修改
 
 # line matching config
 line2d:

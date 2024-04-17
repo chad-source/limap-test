@@ -213,7 +213,7 @@ def compute_matches(cfg, descinfo_folder, image_ids, neighbors):
     import limap.line2d
     basedir = os.path.join("line_matchings", cfg["line2d"]["detector"]["method"], "feats_{0}".format(cfg["line2d"]["extractor"]["method"]))
     extractor = limap.line2d.get_extractor(cfg["line2d"]["extractor"], weight_path=weight_path)
-    se_match = cfg["skip_exists"] or cfg["line2d"]["matcher"]["skip_exists"]
+    se_match = cfg["skip_exists"] or cfg["line2d"]["matcher"]["skip_exists"] # line2d_match.yaml 修改
     matcher = limap.line2d.get_matcher(cfg["line2d"]["matcher"], extractor, n_neighbors=cfg["n_neighbors"], weight_path=weight_path)
     if not cfg["load_match"]:
         folder_save = os.path.join(cfg["dir_save"], basedir)
