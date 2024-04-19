@@ -1,5 +1,7 @@
 import os, sys
+import shutil
 import numpy as np
+from scipy.fft import dst
 
 import limap.base as _base
 import limap.util.io as limapio
@@ -23,7 +25,7 @@ def parse_config_triangulation():
     arg_parser = argparse.ArgumentParser(description='triangulate 3d lines')
     arg_parser.add_argument('-c', '--config_file', type=str, default='cfgs/triangulation/hypersim.yaml', help='config file')
     arg_parser.add_argument('--default_config_file', type=str, default='cfgs/triangulation/default.yaml', help='default config file')
-    arg_parser.add_argument('--npyfolder', type=str, default='npyfolder', help='folder to load precomputed results')
+    arg_parser.add_argument('--npyfolder', type=str, default=None, help='folder to load precomputed results')
 
     args, unknown = arg_parser.parse_known_args()
     cfg = cfgutils.load_config(args.config_file, default_path=args.default_config_file)
@@ -70,28 +72,51 @@ def vis_reconstruction(linetracks, imagecols, mode="open3d", n_visible_views=4, 
 
 def main():
 
-    cfg = parse_config_triangulation()
-    dataset = Hypersim(cfg["data_dir"])
-    run_scene_hypersim(cfg, dataset, cfg["scene_id"], cam_id=cfg["cam_id"])
+    src_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ori", "images")
+    dst_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ai_001_001", "images")
 
-    args = parse_args_3d_lines()
-    lines, linetracks = limapio.read_lines_from_input(args.input_dir)
-    ranges = None
-    if args.metainfos is not None:
-        _, ranges = limapio.read_txt_metainfos(args.metainfos)
-    if args.use_robust_ranges:
-        ranges = limapvis.compute_robust_range_lines(lines)
-    if args.n_visible_views > 2 and linetracks is None:
-        raise ValueError("Error! Track information is not available.")
-    if args.imagecols is None:
-        vis_3d_lines(lines, mode=args.mode, ranges=ranges, scale=args.scale)
-    else:
-        if (not os.path.exists(args.imagecols)) or (not args.imagecols.endswith('.npy')):
-            raise ValueError("Error! Input file {0} is not valid".format(args.imagecols))
-        imagecols = _base.ImageCollection(limapio.read_npy(args.imagecols).item())
-        vis_reconstruction(linetracks, imagecols, mode=args.mode, n_visible_views=args.n_visible_views, ranges=ranges, scale=args.scale, cam_scale=args.cam_scale)
-    if args.output_dir is not None:
-        limapio.save_obj(args.output_dir, lines)
+    count = 0
+
+    while(count < 99):
+        for folder in os.listdir(src_folder):
+            temp = 0
+        for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+            if (index / 4) < count:
+                continue
+            else:
+                if temp < 12:
+                    src_path = os.path.join(os.path.join(src_folder, folder), filename)
+                    dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+                    shutil.copy(src_path, dst_path)
+                    temp += 1
+                else:
+                    break
+        count += 3
+
+        
+
+        cfg = parse_config_triangulation()
+        dataset = Hypersim(cfg["data_dir"])
+        run_scene_hypersim(cfg, dataset, cfg["scene_id"], cam_id=cfg["cam_id"])
+
+        args = parse_args_3d_lines()
+        lines, linetracks = limapio.read_lines_from_input(args.input_dir)
+        ranges = None
+        if args.metainfos is not None:
+            _, ranges = limapio.read_txt_metainfos(args.metainfos)
+        if args.use_robust_ranges:
+            ranges = limapvis.compute_robust_range_lines(lines)
+        if args.n_visible_views > 2 and linetracks is None:
+            raise ValueError("Error! Track information is not available.")
+        if args.imagecols is None:
+            vis_3d_lines(lines, mode=args.mode, ranges=ranges, scale=args.scale)
+        else:
+            if (not os.path.exists(args.imagecols)) or (not args.imagecols.endswith('.npy')):
+                raise ValueError("Error! Input file {0} is not valid".format(args.imagecols))
+            imagecols = _base.ImageCollection(limapio.read_npy(args.imagecols).item())
+            vis_reconstruction(linetracks, imagecols, mode=args.mode, n_visible_views=args.n_visible_views, ranges=ranges, scale=args.scale, cam_scale=args.cam_scale)
+        if args.output_dir is not None:
+            limapio.save_obj(args.output_dir, lines)
 
 
 if __name__ == '__main__':
