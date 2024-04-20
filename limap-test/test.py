@@ -72,26 +72,63 @@ def vis_reconstruction(linetracks, imagecols, mode="open3d", n_visible_views=4, 
 
 def main():
 
-    src_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ori", "images")
+    src_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "original_image", "images")
     dst_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ai_001_001", "images")
 
     count = 0
 
-    while(count < 99):
-        for folder in os.listdir(src_folder):
+    while(count < 100):
+        for num, folder in enumerate(os.listdir(src_folder)):
             temp = 0
-        for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
-            if (index / 4) < count:
-                continue
+            if num == 0:
+                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+                    if (index / 4) < count:
+                        continue
+                    else:
+                        if temp < 20:
+                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
+                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+                            shutil.copy(src_path, dst_path)
+                            temp += 1
+                        else:
+                            break
+            elif num == 1:
+                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+                    if (index / 9) < count:
+                        continue
+                    else:
+                        if temp < 45:
+                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
+                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+                            shutil.copy(src_path, dst_path)
+                            temp += 1
+                        else:
+                            break
+            elif num == 2:
+                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+                    if (index / 10) < count:
+                        continue
+                    else:
+                        if temp < 50:
+                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
+                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+                            shutil.copy(src_path, dst_path)
+                            temp += 1
+                        else:
+                            break
             else:
-                if temp < 12:
-                    src_path = os.path.join(os.path.join(src_folder, folder), filename)
-                    dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
-                    shutil.copy(src_path, dst_path)
-                    temp += 1
-                else:
-                    break
-        count += 3
+                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+                    if (index / 11) < count:
+                        continue
+                    else:
+                        if temp < 55:
+                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
+                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+                            shutil.copy(src_path, dst_path)
+                            temp += 1
+                        else:
+                            break
+        count += 5
 
         
 

@@ -204,7 +204,7 @@ def run_colmap_sfm_with_known_poses(cfg, imagecols, output_path='tmp/tmp_colmap'
            '--image_path', image_path,
            '--input_path', model_path,
            '--output_path', point_triangulation_path]
-    subprocess.run(cmd, check=True, )
+    subprocess.run(cmd, check=True)
 
     # map to original image names
     if map_to_original_image_names:
