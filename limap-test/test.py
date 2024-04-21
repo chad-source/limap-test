@@ -145,13 +145,14 @@ def main():
             ranges = limapvis.compute_robust_range_lines(lines)
         if args.n_visible_views > 2 and linetracks is None:
             raise ValueError("Error! Track information is not available.")
-        if args.imagecols is None:
-            vis_3d_lines(lines, mode=args.mode, ranges=ranges, scale=args.scale)
-        else:
-            if (not os.path.exists(args.imagecols)) or (not args.imagecols.endswith('.npy')):
-                raise ValueError("Error! Input file {0} is not valid".format(args.imagecols))
-            imagecols = _base.ImageCollection(limapio.read_npy(args.imagecols).item())
-            vis_reconstruction(linetracks, imagecols, mode=args.mode, n_visible_views=args.n_visible_views, ranges=ranges, scale=args.scale, cam_scale=args.cam_scale)
+        if count == 100:
+            if args.imagecols is None:
+                vis_3d_lines(lines, mode=args.mode, ranges=ranges, scale=args.scale)
+            else:
+                if (not os.path.exists(args.imagecols)) or (not args.imagecols.endswith('.npy')):
+                    raise ValueError("Error! Input file {0} is not valid".format(args.imagecols))
+                imagecols = _base.ImageCollection(limapio.read_npy(args.imagecols).item())
+                vis_reconstruction(linetracks, imagecols, mode=args.mode, n_visible_views=args.n_visible_views, ranges=ranges, scale=args.scale, cam_scale=args.cam_scale)
         if args.output_dir is not None:
             limapio.save_obj(args.output_dir, lines)
 

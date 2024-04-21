@@ -14,7 +14,7 @@ use_cuda: True
 visualize: True
 max_image_dim: 1600
 skip_exists: False
-output_dir: null 
+output_dir: outputs/quickstart_triangulation
 output_folder: "finaltracks"
 load_dir: null
 n_jobs: -1 # for undistortion
