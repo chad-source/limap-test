@@ -2,6 +2,7 @@ import os, sys
 import shutil
 import numpy as np
 from scipy.fft import dst
+import time
 
 import limap.base as _base
 import limap.util.io as limapio
@@ -75,6 +76,7 @@ def main():
     src_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "original_image", "images")
     dst_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ai_001_001", "images")
 
+    start_time = time.time()
     count = 0
 
     while(count < 100):
@@ -146,6 +148,7 @@ def main():
         if args.n_visible_views > 2 and linetracks is None:
             raise ValueError("Error! Track information is not available.")
         if count == 100:
+            print("--- %s seconds ---" % (time.time() - start_time))
             if args.imagecols is None:
                 vis_3d_lines(lines, mode=args.mode, ranges=ranges, scale=args.scale)
             else:
