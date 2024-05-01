@@ -173,7 +173,7 @@ def compute_2d_segs(cfg, imagecols, compute_descinfo=True):
     detector = limap.line2d.get_detector(cfg["line2d"]["detector"], max_num_2d_segs=cfg["line2d"]["max_num_2d_segs"], do_merge_lines=cfg["line2d"]["do_merge_lines"], visualize=cfg["line2d"]["visualize"], weight_path=weight_path)
     
     # 修改
-    if os.path.isfile(os.path.join(os.path.join(cfg["dir_load"],basedir),"visualize")):
+    if os.path.isfile(os.path.join(cfg["dir_load"],basedir)):
         cfg["load_det"] = True
     
     if not cfg["load_det"]:
@@ -215,6 +215,11 @@ def compute_matches(cfg, descinfo_folder, image_ids, neighbors):
     extractor = limap.line2d.get_extractor(cfg["line2d"]["extractor"], weight_path=weight_path)
     se_match = cfg["skip_exists"] or cfg["line2d"]["matcher"]["skip_exists"] # line2d_match.yaml 修改
     matcher = limap.line2d.get_matcher(cfg["line2d"]["matcher"], extractor, n_neighbors=cfg["n_neighbors"], weight_path=weight_path)
+
+    # 修改
+    if os.path.isfile(os.path.join(cfg["dir_load"],basedir)):
+        cfg["load_match"] = True
+    
     if not cfg["load_match"]:
         folder_save = os.path.join(cfg["dir_save"], basedir)
         matches_folder = matcher.match_all_neighbors(folder_save, image_ids, neighbors, descinfo_folder, skip_exists=se_match)

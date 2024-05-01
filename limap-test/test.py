@@ -16,8 +16,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 import limap.util.config as cfgutils
 import limap.runners
 
-def run_scene_hypersim(cfg, dataset, scene_id, cam_id=0):
-    imagecols = read_scene_hypersim(cfg, dataset, scene_id, cam_id=cam_id, load_depth=False)
+def run_scene_hypersim(cfg, dataset, scene_id, img_count, cam_id=0):
+    imagecols = read_scene_hypersim(cfg, dataset, scene_id, img_count, cam_id=cam_id, load_depth=False)
     linetracks = limap.runners.line_triangulation(cfg, imagecols)
     return linetracks
 
@@ -73,82 +73,82 @@ def vis_reconstruction(linetracks, imagecols, mode="open3d", n_visible_views=4, 
 
 def main():
 
+    start_time = time.time()
     src_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "original_image", "images")
     dst_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ai_001_001", "images")
 
-    start_time = time.time()
     count = 0
 
     while(count < 100):
-        for num, folder in enumerate(os.listdir(src_folder)):
-            temp = 0
-            if num == 0:
-                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
-                    if (index / 4) < count:
-                        continue
-                    else:
-                        if temp < 20:
-                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
-                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
-                            shutil.copy(src_path, dst_path)
-                            temp += 1
-                        else:
-                            break
-            elif num == 1:
-                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
-                    if (index / 9) < count:
-                        continue
-                    else:
-                        if temp < 45:
-                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
-                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
-                            shutil.copy(src_path, dst_path)
-                            temp += 1
-                        else:
-                            break
-            elif num == 2:
-                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
-                    if (index / 10) < count:
-                        continue
-                    else:
-                        if temp < 50:
-                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
-                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
-                            shutil.copy(src_path, dst_path)
-                            temp += 1
-                        else:
-                            break
-            else:
-                for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
-                    if (index / 11) < count:
-                        continue
-                    else:
-                        if temp < 55:
-                            src_path = os.path.join(os.path.join(src_folder, folder), filename)
-                            dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
-                            shutil.copy(src_path, dst_path)
-                            temp += 1
-                        else:
-                            break
-        count += 5
-
         
+        # for num, folder in enumerate(os.listdir(src_folder)):
+        #     temp = 0
+        #     if num == 0:
+        #         for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+        #             if (index / 4) < count:
+        #                 continue
+        #             else:
+        #                 if temp < 20:
+        #                     src_path = os.path.join(os.path.join(src_folder, folder), filename)
+        #                     dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+        #                     shutil.copy(src_path, dst_path)
+        #                     temp += 1
+        #                 else:
+        #                     break
+        #     elif num == 1:
+        #         for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+        #             if (index / 9) < count:
+        #                 continue
+        #             else:
+        #                 if temp < 45:
+        #                     src_path = os.path.join(os.path.join(src_folder, folder), filename)
+        #                     dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+        #                     shutil.copy(src_path, dst_path)
+        #                     temp += 1
+        #                 else:
+        #                     break
+        #     elif num == 2:
+        #         for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+        #             if (index / 10) < count:
+        #                 continue
+        #             else:
+        #                 if temp < 50:
+        #                     src_path = os.path.join(os.path.join(src_folder, folder), filename)
+        #                     dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+        #                     shutil.copy(src_path, dst_path)
+        #                     temp += 1
+        #                 else:
+        #                     break
+        #     else:
+        #         for index, filename in enumerate(os.listdir(os.path.join(src_folder, folder))):
+        #             if (index / 11) < count:
+        #                 continue
+        #             else:
+        #                 if temp < 55:
+        #                     src_path = os.path.join(os.path.join(src_folder, folder), filename)
+        #                     dst_path = os.path.join(os.path.join(dst_folder, folder), filename)
+        #                     shutil.copy(src_path, dst_path)
+        #                     temp += 1
+        #                 else:
+        #                     break
+        
+        count += 5       
 
         cfg = parse_config_triangulation()
         dataset = Hypersim(cfg["data_dir"])
-        run_scene_hypersim(cfg, dataset, cfg["scene_id"], cam_id=cfg["cam_id"])
+        run_scene_hypersim(cfg, dataset, cfg["scene_id"], img_count=count, cam_id=cfg["cam_id"])
 
-        args = parse_args_3d_lines()
-        lines, linetracks = limapio.read_lines_from_input(args.input_dir)
-        ranges = None
-        if args.metainfos is not None:
-            _, ranges = limapio.read_txt_metainfos(args.metainfos)
-        if args.use_robust_ranges:
-            ranges = limapvis.compute_robust_range_lines(lines)
-        if args.n_visible_views > 2 and linetracks is None:
-            raise ValueError("Error! Track information is not available.")
         if count == 100:
-            print("--- %s seconds ---" % (time.time() - start_time))
+            args = parse_args_3d_lines()
+            lines, linetracks = limapio.read_lines_from_input(args.input_dir)
+            ranges = None
+            if args.metainfos is not None:
+                _, ranges = limapio.read_txt_metainfos(args.metainfos)
+            if args.use_robust_ranges:
+                ranges = limapvis.compute_robust_range_lines(lines)
+            if args.n_visible_views > 2 and linetracks is None:
+                raise ValueError("Error! Track information is not available.")
+             
             if args.imagecols is None:
                 vis_3d_lines(lines, mode=args.mode, ranges=ranges, scale=args.scale)
             else:
@@ -156,8 +156,9 @@ def main():
                     raise ValueError("Error! Input file {0} is not valid".format(args.imagecols))
                 imagecols = _base.ImageCollection(limapio.read_npy(args.imagecols).item())
                 vis_reconstruction(linetracks, imagecols, mode=args.mode, n_visible_views=args.n_visible_views, ranges=ranges, scale=args.scale, cam_scale=args.cam_scale)
-        if args.output_dir is not None:
-            limapio.save_obj(args.output_dir, lines)
+            if args.output_dir is not None:
+                limapio.save_obj(args.output_dir, lines)
+        
 
 
 if __name__ == '__main__':

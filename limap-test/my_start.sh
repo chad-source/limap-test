@@ -4,4 +4,4 @@ python --version
 pip --version
 python -m pip install -r requirements.txt
 python -m pip install -Ive .
-python test.py
+python runners/hypersim/triangulation.py

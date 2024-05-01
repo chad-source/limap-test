@@ -1,5 +1,6 @@
 import os, sys
 import numpy as np
+import time
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from Hypersim import Hypersim
@@ -8,9 +9,10 @@ from loader import read_scene_hypersim
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 import limap.util.config as cfgutils
 import limap.runners
+import limap.visualize as limapvis
 
-def run_scene_hypersim(cfg, dataset, scene_id, cam_id=0):
-    imagecols = read_scene_hypersim(cfg, dataset, scene_id, cam_id=cam_id, load_depth=False)
+def run_scene_hypersim(cfg, dataset, scene_id, img_count, cam_id=0):
+    imagecols = read_scene_hypersim(cfg, dataset, scene_id, img_count, cam_id=cam_id, load_depth=False)
     linetracks = limap.runners.line_triangulation(cfg, imagecols)
     return linetracks
 
@@ -34,9 +36,25 @@ def parse_config():
     return cfg
 
 def main():
+
+    start_time = time.time()
+    img_count = 0
     cfg = parse_config()
     dataset = Hypersim(cfg["data_dir"])
-    run_scene_hypersim(cfg, dataset, cfg["scene_id"], cam_id=cfg["cam_id"])
+    linetracks = None
+    imagecols = None
+
+    while img_count < 100:
+        img_count +=5                                                           #加入建模的圖片張數
+        linetracks, imagecols = run_scene_hypersim(cfg, dataset, cfg["scene_id"], img_count, cam_id=cfg["cam_id"])
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    
+    VisTrack = limapvis.Open3DTrackVisualizer(linetracks)
+    import pdb
+    pdb.set_trace()
+    VisTrack.vis_reconstruction(imagecols, n_visible_views=cfg["n_visible_views"], width=2)
+    pdb.set_trace()
 
 if __name__ == '__main__':
     main()

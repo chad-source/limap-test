@@ -18,12 +18,13 @@ class HypersimDepthReader(_base.BaseDepthReader):
         depth = raydepth2depth(raydepth, self.K, self.img_hw)
         return depth
 
-def read_scene_hypersim(cfg, dataset, scene_id, cam_id=0, load_depth=False):
+def read_scene_hypersim(cfg, dataset, scene_id, img_count, cam_id=0, load_depth=False):
     # set scene id
     dataset.set_scene_id(scene_id)
     dataset.set_max_dim(cfg["max_image_dim"])
 
     # generate image indexes
+    cfg["input_n_views"]  = img_count
     index_list = np.arange(0, cfg["input_n_views"], cfg["input_stride"]).tolist()
     index_list = dataset.filter_index_list(index_list, cam_id=cam_id)
 
